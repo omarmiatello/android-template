@@ -1,6 +1,3 @@
-import com.android.build.gradle.LibraryExtension
-import org.gradle.api.tasks.bundling.Jar
-
 /**
  * First version:
  * https://github.com/cortinico/kotlin-android-template/blob/master/buildSrc/src/main/kotlin/publish.gradle.kts
@@ -40,7 +37,7 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
     description = "Assembles Source jar for publishing"
     archiveClassifier.set("sources")
     if (plugins.hasPlugin("com.android.library")) {
-        from((project.extensions.getByName("android") as LibraryExtension).sourceSets.named("main").get().java.srcDirs)
+        from((project.extensions.getByName("android") as com.android.build.gradle.LibraryExtension).sourceSets.named("main").get().java.srcDirs)
     } else {
         from((project.extensions.getByName("sourceSets") as SourceSetContainer).named("main").get().allSource)
     }
@@ -125,7 +122,7 @@ afterEvaluate {
         if (signingKey.isNullOrBlank() || signingPwd.isNullOrBlank()) {
             logger.info("Signing Disable as the PGP key was not found")
         } else {
-            logger.warn("Usign $signingKey - $signingPwd")
+            logger.warn("Usign SIGNING_KEY and SIGNING_PWD")
             signing {
                 useInMemoryPgpKeys(signingKey, signingPwd)
                 sign(publishing.publications["release"])

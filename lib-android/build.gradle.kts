@@ -9,25 +9,23 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Sdk.compile)
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdkVersion(Sdk.min)
-        targetSdkVersion(Sdk.target)
-
-        versionCode = 1
-        versionName = version.toString()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(Version.java)
-        targetCompatibility = JavaVersion.toVersion(Version.java)
+        val javaVersion = JavaVersion.toVersion(libs.versions.java.get())
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = Version.java
+        jvmTarget = libs.versions.java.get()
     }
     buildTypes {
         getByName("release") {
@@ -46,10 +44,21 @@ android {
 }
 
 dependencies {
-    implementation(Lib.androidxAppcompat)
-    implementation(Lib.androidxCoreKtx)
+    // Standard libs
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.core)
+    implementation(libs.google.materialCore)
+    implementation(libs.bundles.coroutines)
 
-    testImplementation(Lib.testJunit)
+    // UI: Jetpack Compose
+    implementation(libs.bundles.compose.basic)
+    implementation(libs.bundles.compose.iconsViewModelCoil)
+    debugImplementation(libs.bundles.compose.debug)
 
-    LibGroup.testAndroid.forEach { androidTestImplementation(it) }
+    // Your dependencies
+    // ...
+
+    // Test
+    androidTestImplementation(libs.bundles.test.androidx)
+    testImplementation(libs.test.junit)
 }

@@ -1,14 +1,15 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    // kotlin("kapt")
 }
 
 android {
-    compileSdkVersion(Sdk.compile)
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdkVersion(Sdk.min)
-        targetSdkVersion(Sdk.target)
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         applicationId = "com.example"
         versionCode = 1
         versionName = "1.0.0"
@@ -18,15 +19,16 @@ android {
         compose = true
     }
     kotlinOptions {
-        jvmTarget = Version.java
+        jvmTarget = libs.versions.java.get()
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn" // for Jetpack Compose
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Version.compose
+        kotlinCompilerExtensionVersion = libs.compose.compiler.get().versionConstraint.displayName
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.toVersion(Version.java)
-        targetCompatibility = JavaVersion.toVersion(Version.java)
+        val javaVersion = JavaVersion.toVersion(libs.versions.java.get())
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     buildTypes {
         getByName("release") {
@@ -39,7 +41,11 @@ android {
     }
 
     lint {
-        disable("ObsoleteLintCustomCheck")
+        disable(
+            "ObsoleteLintCustomCheck",
+            "UnsafeExperimentalUsageError",
+            "UnsafeExperimentalUsageWarning"
+        )
 
         isWarningsAsErrors = true
         isAbortOnError = true
@@ -62,13 +68,21 @@ android {
 }
 
 dependencies {
-    implementation(Lib.androidxAppcompat)
-    implementation(Lib.androidxCoreKtx)
-    LibGroup.composeAll.forEach { implementation(it) }
-    LibGroup.composeDebug.forEach { debugImplementation(it) }
+    // Standard libs
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.core)
+    implementation(libs.google.materialCore)
+    implementation(libs.bundles.coroutines)
 
-    // test libs
+    // UI: Jetpack Compose
+    implementation(libs.bundles.compose.basic)
+    implementation(libs.bundles.compose.iconsViewModelCoil)
+    debugImplementation(libs.bundles.compose.debug)
 
-    testImplementation(Lib.testJunit)
-    LibGroup.testAndroid.forEach { androidTestImplementation(it) }
+    // Your dependencies
+    // ...
+
+    // Test
+    androidTestImplementation(libs.bundles.test.androidx)
+    testImplementation(libs.test.junit)
 }

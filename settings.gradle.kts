@@ -17,9 +17,14 @@ pluginManagement {
     }
 }
 
+// Enable Gradle's version catalog support
+// https://docs.gradle.org/current/userguide/platforms.html
+enableFeaturePreview("VERSION_CATALOGS")
+
 rootProject.name = "android-template"
 
 include(
+    "all",
     "app",
     "lib-android",
     "lib-kotlin"

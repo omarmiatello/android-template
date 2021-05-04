@@ -9,10 +9,17 @@ plugins {
 }
 
 dependencies {
-    testImplementation(Lib.testJunit)
+    implementation(libs.bundles.coroutines)
+
+    // Your dependencies
+    // ...
+
+    // Test
+    testImplementation(libs.test.junit)
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(Version.java)
-    targetCompatibility = JavaVersion.toVersion(Version.java)
+    val javaVersion = JavaVersion.toVersion(libs.versions.java.get())
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 }

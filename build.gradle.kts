@@ -1,12 +1,10 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-
 plugins {
     id("com.android.application") apply false
     id("com.android.library") apply false
     kotlin("android") apply false
-    id("io.gitlab.arturbosch.detekt") version Version.pluginDetekt
-    id("org.jlleitschuh.gradle.ktlint") version Version.pluginKtlint
-    id("com.github.ben-manes.versions") version Version.pluginBenManesVersions
+    id("io.gitlab.arturbosch.detekt") version "1.16.0"
+    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
+    id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 allprojects {
@@ -27,7 +25,8 @@ subprojects {
 
     ktlint {
         debug.set(false)
-        version.set(Version.ktlint)
+        // version.set("0.41.0")
+        // version.set(libs.ktlint.core.get().versionConstraint.displayName)
         verbose.set(true)
         android.set(false)
         outputToConsole.set(true)
@@ -54,10 +53,14 @@ tasks {
     register("clean", Delete::class.java) {
         delete(rootProject.buildDir)
     }
-
-    withType<DependencyUpdatesTask> {
-        rejectVersionIf {
-            candidate.version.isStableVersion().not()
-        }
+    
+    fun isStableVersion(version: String): Boolean {
+        val upperCase = version.toUpperCase(java.util.Locale.ROOT)
+        val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { it in upperCase }
+        return stableKeyword || Regex("^[0-9,.v-]+(-r)?$").matches(version)
+    }
+    
+    withType<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask> {
+        rejectVersionIf { !isStableVersion(candidate.version) }
     }
 }
