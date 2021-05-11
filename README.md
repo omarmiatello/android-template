@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/github/license/omarmiatello/android-template.svg)
 ![Language](https://img.shields.io/github/languages/top/omarmiatello/android-template?color=blue&logo=kotlin)
 
-A simple Github template that lets you create an **Android/Kotlin** project. 
+A simple collection of Android templates that lets you create an **Android/Kotlin** project. 
 
 This template is focused on delivering a project with **static analysis** and **continuous integration** already in place.
 
