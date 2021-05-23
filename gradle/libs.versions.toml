@@ -33,7 +33,7 @@ compose-uiCore = "androidx.compose.ui:ui:1.0.0-beta06"
 compose-uiTooling = "androidx.compose.ui:ui-tooling:1.0.0-beta06"
 compose-viewmodel = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha04"
 
-composeAccompanist-coil = "com.google.accompanist:accompanist-coil:0.9.0"
+composeAccompanist-coil = "com.google.accompanist:accompanist-coil:0.9.1"
 
 coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
 coroutines-core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
@@ -107,8 +107,8 @@ gradlePlugin-dokka-plugin = "org.jetbrains.dokka:dokka-gradle-plugin:1.4.32"
 gradlePlugin-kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
 gradlePlugin-ktlint = "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:10.0.0"
 
-kotlin-reflect = "org.jetbrains.kotlin:kotlin-reflect:1.5.0"
-kotlin-scripting-compiler = "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.5.0"
+kotlin-reflect = "org.jetbrains.kotlin:kotlin-reflect:1.4.32"
+kotlin-scripting-compiler = "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:1.4.32"
 
 kotlinx-datetime = "org.jetbrains.kotlinx:kotlinx-datetime:0.2.0"
 kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.0"
