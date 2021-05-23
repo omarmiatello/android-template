@@ -1,23 +1,9 @@
 /**
- * First version:
- * https://github.com/cortinico/kotlin-android-template/blob/master/buildSrc/src/main/kotlin/publish.gradle.kts
- *
- * The following plugin tasks care of setting up:
- * - Publishing to Maven Central and Sonatype Snapshots
- * - GPG Signing with in memory PGP Keys
- * - Dokka for documentation
- * - sourceJar for attaching sources to publications
- *
  * To use it just apply:
  *
  * plugins {
  *     publish
  * }
- *
- * To your build.gradle.kts.
- *
- * If you copy over this file in your project, make sure to copy it inside: buildSrc/src/main/kotlin/publish.gradle.kts.
- * Make sure to copy over also buildSrc/build.gradle.kts otherwise this plugin will fail to compile due to missing dependencies.
  */
 plugins {
     id("maven-publish")
@@ -25,11 +11,12 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
+group = "com.github.owner.project-name"
+
 val dokkaJar = tasks.create<Jar>("dokkaJar") {
-    group = "build"
-    description = "Assembles Javadoc jar from Dokka API docs"
+    group = "documentation"
     archiveClassifier.set("javadoc")
-    from(tasks.dokkaJavadoc)
+    from(tasks.findByName("dokkaHtml"))
 }
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
@@ -37,18 +24,16 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
     description = "Assembles Source jar for publishing"
     archiveClassifier.set("sources")
     if (plugins.hasPlugin("com.android.library")) {
-        from((project.extensions.getByName("android") as com.android.build.gradle.LibraryExtension).sourceSets.named("main").get().java.srcDirs)
+        from(
+            (project.extensions.getByName("android") as com.android.build.gradle.LibraryExtension).sourceSets.named(
+                "main"
+            ).get().java.srcDirs
+        )
     } else {
-        from((project.extensions.getByName("sourceSets") as SourceSetContainer).named("main").get().allSource)
-    }
-}
-
-tasks.dokkaJavadoc.configure {
-    outputDirectory.set(buildDir.resolve("javadoc"))
-    dokkaSourceSets {
-        configureEach {
-            sourceRoot(file("src"))
-        }
+        from(
+            (project.extensions.getByName("sourceSets") as SourceSetContainer).named("main")
+                .get().allSource
+        )
     }
 }
 
@@ -59,16 +44,16 @@ afterEvaluate {
                 name = "nexus"
                 url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 credentials {
-                    username = "NEXUS_USERNAME".byProperty
-                    password = "NEXUS_PASSWORD".byProperty
+                    username = getPropertyOrNull("NEXUS_USERNAME")
+                    password = getPropertyOrNull("NEXUS_PASSWORD")
                 }
             }
             maven {
                 name = "snapshot"
                 url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
                 credentials {
-                    username = "NEXUS_USERNAME".byProperty
-                    password = "NEXUS_PASSWORD".byProperty
+                    username = getPropertyOrNull("NEXUS_USERNAME")
+                    password = getPropertyOrNull("NEXUS_PASSWORD")
                 }
             }
         }
@@ -84,7 +69,7 @@ afterEvaluate {
                 artifact(sourcesJar)
 
                 pom {
-                    if (!"USE_SNAPSHOT".byProperty.isNullOrBlank()) {
+                    if (getPropertyOrNull("USE_SNAPSHOT") != null) {
                         version = "$version-SNAPSHOT"
                     }
                     name.set("project-name:$artifactId")
@@ -117,12 +102,12 @@ afterEvaluate {
             }
         }
 
-        val signingKey = "SIGNING_KEY".byProperty
-        val signingPwd = "SIGNING_PWD".byProperty
-        if (signingKey.isNullOrBlank() || signingPwd.isNullOrBlank()) {
+        val signingKey = getPropertyOrNull("SIGNING_KEY")
+        val signingPwd = getPropertyOrNull("SIGNING_PWD")
+        if (signingKey == null || signingPwd == null) {
             logger.info("Signing Disable as the PGP key was not found")
         } else {
-            logger.warn("Usign SIGNING_KEY and SIGNING_PWD")
+            logger.warn("Using SIGNING_KEY and SIGNING_PWD")
             signing {
                 useInMemoryPgpKeys(signingKey, signingPwd)
                 sign(publishing.publications["release"])
@@ -131,4 +116,6 @@ afterEvaluate {
     }
 }
 
-val String.byProperty: String? get() = findProperty(this) as? String
+fun getPropertyOrNull(property: String) = (findProperty(property) as? String)
+        ?.takeIf { it.isNotBlank() }
+
