@@ -27,5 +27,6 @@ include(
     "all",
     "app",
     "lib-android",
-    "lib-kotlin"
+    "lib-kotlin",
+    "lib-kotlin-multiplatform",
 )
